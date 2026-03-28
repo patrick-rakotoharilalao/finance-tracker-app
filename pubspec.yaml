@@ -1,0 +1,118 @@
+name: finance_tracker
+# ↑ Technical name of the project. No spaces, no uppercase.
+#   Flutter uses this name internally to identify the app.
+
+description: A personal finance tracking Flutter app with AI capabilities
+# ↑ Free description. Useful for you and anyone reading the project.
+
+version: 1.0.0+1
+# ↑ "1.0.0" = human-readable version (Play Store)
+#   "+1" = internal build number (must increase with each release)
+
+publish_to: none
+# ↑ Prevents Flutter from accidentally publishing this package to pub.dev.
+#   Always set to "none" for an app, not a library.
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+# ↑ Your app requires Dart version 3.x minimum.
+#   Recent Flutter automatically includes Dart 3.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # ↑ Required. Declares that this project uses Flutter.
+  #   Without this, you have no access to anything Flutter.
+
+  # --- STATE MANAGEMENT ---
+  provider: ^6.1.2
+  # ↑ Manages the global state of the app (balance, transactions, theme).
+  #   "^" means: version 6.1.2 or higher compatible.
+
+  # --- LOCAL DATABASE ---
+  hive: ^2.2.3
+  # ↑ The NoSQL database engine. Stores your Dart objects.
+
+  hive_flutter: ^1.1.0
+  # ↑ Hive adapter for Flutter. Initializes Hive
+  #   in the correct folder on the device automatically.
+
+  # --- NAVIGATION ---
+  go_router: ^14.0.0
+  # ↑ Manages navigation between the 4 screens.
+  #   More powerful than classic Navigator, recommended by Google.
+
+  # --- CHARTS ---
+  fl_chart: ^0.68.0
+  # ↑ Draws pie charts and bar charts on the
+  #   Statistics screen. 100% native Flutter.
+
+  # --- ARTIFICIAL INTELLIGENCE ---
+  google_generative_ai: ^0.4.3
+  # ↑ Official Google SDK to call the Gemini API.
+  #   Used for auto-categorization and monthly insights.
+
+  flutter_dotenv: ^5.1.0
+  # ↑ Reads the .env file to retrieve the Gemini API key
+  #   without writing it directly in the source code.
+
+  # --- UTILITIES ---
+  intl: ^0.19.0
+  # ↑ Formats numbers into currency (5,000 Ar)
+  #   and dates in the correct locale (March 28, 2026).
+
+  uuid: ^4.4.0
+  # ↑ Generates a unique identifier for each transaction.
+  #   Ex: "a3f9-28bc-..." — guaranteed unique every time.
+
+  shared_preferences: ^2.3.0
+  # ↑ Stores simple values: theme, currency, streak.
+  #   Like cookies for a mobile app.
+
+  # --- UI & ANIMATIONS ---
+  animate_do: ^3.3.4
+  # ↑ Ready-to-use entry animations: FadeIn,
+  #   SlideInLeft, BounceIn — one line of code each.
+
+  lottie: ^3.1.0
+  # ↑ Plays JSON animations (Lottie files) —
+  #   used after a transaction is successfully saved.
+
+  flutter_local_notifications: ^17.2.2
+  # ↑ Sends local notifications on the device
+  #   without going through a server. Contextual reminders.
+
+  home_widget: ^0.5.0
+  # ↑ Creates the widget visible on the phone's home screen
+  #   (Android & iOS).
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # ↑ Flutter testing package. Included by default.
+  #   Useful if you write unit tests.
+
+  flutter_lints: ^3.0.0
+  # ↑ Analyzes your code and flags bad practices.
+  #   Like a spell checker for code.
+
+  build_runner: ^2.4.9
+  # ↑ Tool that automatically generates code.
+  #   Run with: dart run build_runner build
+
+  hive_generator: ^2.0.1
+  # ↑ Works with build_runner to generate
+  #   Hive TypeAdapter files (.g.dart files).
+
+flutter:
+  uses-material-design: true
+  # ↑ Enables Google Material Design icons and components.
+  #   Required to use Icons.home, Icons.add, etc.
+
+  assets:
+    - .env
+    # ↑ Declares the .env file as a Flutter asset
+    #   so flutter_dotenv can read it.
+    - assets/animations/
+    # ↑ Folder containing Lottie files (.json).
+    #   The trailing "/" means "everything inside this folder".
