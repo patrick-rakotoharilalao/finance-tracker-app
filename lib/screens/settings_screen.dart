@@ -25,7 +25,7 @@ class SettingsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
@@ -44,13 +44,13 @@ class SettingsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: AppSizes.fontL,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
 
               // ── APPEARANCE ───────────────────────────────────
-              _SectionTitle('Appearance'),
+              const _SectionTitle('Appearance'),
               const SizedBox(height: AppSizes.paddingS),
               _SettingsCard(
                 child: Row(
@@ -78,7 +78,7 @@ class SettingsScreen extends StatelessWidget {
                     Switch(
                       value: themeProvider.isDarkMode,
                       onChanged: (_) => themeProvider.toggleTheme(),
-                      activeColor: AppColors.primary,
+                      activeThumbColor: AppColors.primary,
                     ),
                   ],
                 ),
@@ -90,14 +90,14 @@ class SettingsScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _SectionTitle('Monthly budget'),
+                  const _SectionTitle('Monthly budget'),
                   TextButton.icon(
                     onPressed: () => _showAddBudgetDialog(context),
                     icon: const Icon(Icons.add, size: 16),
                     label: const Text('Add'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
-                      textStyle: TextStyle(fontSize: AppSizes.fontS),
+                      textStyle: const TextStyle(fontSize: AppSizes.fontS),
                     ),
                   ),
                 ],
@@ -156,7 +156,7 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       // ↑ Allows the sheet to grow above the keyboard
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppSizes.radiusXL),
@@ -200,7 +200,7 @@ class SettingsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: AppSizes.fontL,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
 
@@ -213,8 +213,8 @@ class SettingsScreen extends StatelessWidget {
                       fontSize: AppSizes.fontS,
                       color: Theme.of(context)
                           .colorScheme
-                          .onBackground
-                          .withOpacity(0.6),
+                          .onSurface
+                          .withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: AppSizes.paddingS),
@@ -237,7 +237,7 @@ class SettingsScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? cat.color
-                                  : cat.color.withOpacity(0.1),
+                                  : cat.color.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(
                                 AppSizes.radiusM,
                               ),
@@ -278,8 +278,8 @@ class SettingsScreen extends StatelessWidget {
                       fontSize: AppSizes.fontS,
                       color: Theme.of(context)
                           .colorScheme
-                          .onBackground
-                          .withOpacity(0.6),
+                          .onSurface
+                          .withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: AppSizes.paddingS),
@@ -409,7 +409,7 @@ class _SectionTitle extends StatelessWidget {
       style: TextStyle(
         fontSize: AppSizes.fontM,
         fontWeight: FontWeight.w600,
-        color: Theme.of(context).colorScheme.onBackground,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
@@ -448,10 +448,10 @@ class _EmptyBudget extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(AppSizes.paddingL),
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.05),
+          color: AppColors.primary.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(AppSizes.radiusM),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             width: 1,
             style: BorderStyle.solid,
           ),
@@ -461,7 +461,7 @@ class _EmptyBudget extends StatelessWidget {
             Icon(
               Icons.add_circle_outline,
               size: 32,
-              color: AppColors.primary.withOpacity(0.6),
+              color: AppColors.primary.withValues(alpha: 0.6),
             ),
             const SizedBox(height: AppSizes.paddingS),
             const Text(
