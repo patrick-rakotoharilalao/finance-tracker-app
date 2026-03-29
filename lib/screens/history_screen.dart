@@ -15,7 +15,6 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-
   // Currently displayed month and year
   late int _month;
   late int _year;
@@ -26,7 +25,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     // ↑ initState runs once when the widget is inserted into the tree
     //   Like onMounted() in Vue
     _month = DateTime.now().month;
-    _year  = DateTime.now().year;
+    _year = DateTime.now().year;
   }
 
   // Navigate to previous month
@@ -73,23 +72,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TransactionProvider>();
-    final monthly  = provider.getByMonth(_month, _year);
-    final grouped  = _groupByDate(monthly);
+    final monthly = provider.getByMonth(_month, _year);
+    final grouped = _groupByDate(monthly);
 
     // Monthly totals for the summary bar
-    final totalIncome = monthly
-        .where((t) => t.isIncome)
-        .fold(0.0, (sum, t) => sum + t.amount);
-    final totalExpense = monthly
-        .where((t) => t.isExpense)
-        .fold(0.0, (sum, t) => sum + t.amount);
+    final totalIncome =
+        monthly.where((t) => t.isIncome).fold(0.0, (sum, t) => sum + t.amount);
+    final totalExpense =
+        monthly.where((t) => t.isExpense).fold(0.0, (sum, t) => sum + t.amount);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
-
             // ── APP BAR ──────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -103,7 +99,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     style: TextStyle(
                       fontSize: AppSizes.fontL,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -130,14 +126,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     style: TextStyle(
                       fontSize: AppSizes.fontM,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   IconButton(
                     onPressed: _nextMonth,
                     icon: const Icon(Icons.chevron_right),
                     color: _isCurrentMonth()
-                        ? AppColors.grey.withOpacity(0.3)
+                        ? AppColors.grey.withValues(alpha: 0.3)
                         : AppColors.primary,
                     // ↑ Greyed out if already on current month
                   ),
@@ -216,7 +212,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-
                             // Date group header
                             Padding(
                               padding: const EdgeInsets.only(
@@ -230,8 +225,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   fontWeight: FontWeight.w600,
                                   color: Theme.of(context)
                                       .colorScheme
-                                      .onBackground
-                                      .withOpacity(0.5),
+                                      .onSurface
+                                      .withValues(alpha: 0.5),
                                 ),
                               ),
                             ),
@@ -239,8 +234,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             // Transactions for this date
                             ...transactions.map((t) => TransactionCard(
                                   transaction: t,
-                                  onDelete: () =>
-                                      provider.deleteTransaction(t),
+                                  onDelete: () => provider.deleteTransaction(t),
                                 )),
                           ],
                         );
@@ -282,7 +276,8 @@ class _SummaryItem extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: AppSizes.fontXS,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
         const SizedBox(height: 4),
@@ -311,16 +306,18 @@ class _EmptyMonth extends StatelessWidget {
           Icon(
             Icons.calendar_month_outlined,
             size: 48,
-            color: Theme.of(context).colorScheme.onBackground
-                .withOpacity(0.3),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: AppSizes.paddingM),
           Text(
             'No transactions this month',
             style: TextStyle(
               fontSize: AppSizes.fontM,
-              color: Theme.of(context).colorScheme.onBackground
-                  .withOpacity(0.5),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.5),
             ),
           ),
         ],

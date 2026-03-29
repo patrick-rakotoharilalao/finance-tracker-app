@@ -161,7 +161,7 @@ class _NavItem extends StatelessWidget {
     final isActive = index == currentIndex;
     final color = isActive
         ? Theme.of(context).colorScheme.primary
-        : Theme.of(context).colorScheme.onSurface.withOpacity(0.5);
+        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5);
 
     return GestureDetector(
       onTap: onTap,

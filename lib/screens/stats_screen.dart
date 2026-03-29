@@ -66,7 +66,7 @@ class _StatsScreenState extends State<StatsScreen> {
     final totalExpense = byCategory.values.fold(0.0, (sum, v) => sum + v);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
@@ -85,7 +85,7 @@ class _StatsScreenState extends State<StatsScreen> {
                   style: TextStyle(
                     fontSize: AppSizes.fontL,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -104,14 +104,14 @@ class _StatsScreenState extends State<StatsScreen> {
                     style: TextStyle(
                       fontSize: AppSizes.fontM,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   IconButton(
                     onPressed: _nextMonth,
                     icon: const Icon(Icons.chevron_right),
                     color: _isCurrentMonth
-                        ? AppColors.grey.withOpacity(0.3)
+                        ? AppColors.grey.withValues(alpha: 0.3)
                         : AppColors.primary,
                   ),
                 ],
@@ -123,7 +123,7 @@ class _StatsScreenState extends State<StatsScreen> {
               if (byCategory.isEmpty)
                 _EmptyStats()
               else ...[
-                _SectionTitle('Expenses by category'),
+                const _SectionTitle('Expenses by category'),
                 const SizedBox(height: AppSizes.paddingM),
 
                 // Pie chart + legend side by side
@@ -196,7 +196,7 @@ class _StatsScreenState extends State<StatsScreen> {
                                       fontSize: AppSizes.fontXS,
                                       color: Theme.of(context)
                                           .colorScheme
-                                          .onBackground,
+                                          .onSurface,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -221,7 +221,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 const SizedBox(height: AppSizes.paddingL),
 
                 // ── BAR CHART ────────────────────────────────
-                _SectionTitle('Income vs Expenses — this month'),
+                const _SectionTitle('Income vs Expenses — this month'),
                 const SizedBox(height: AppSizes.paddingM),
 
                 SizedBox(
@@ -236,7 +236,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 const SizedBox(height: AppSizes.paddingL),
 
                 // ── CATEGORY BREAKDOWN ───────────────────────
-                _SectionTitle('Breakdown by category'),
+                const _SectionTitle('Breakdown by category'),
                 const SizedBox(height: AppSizes.paddingM),
 
                 ...byCategory.entries.map((entry) {
@@ -330,13 +330,13 @@ class _BarChartWidget extends StatelessWidget {
         // ↑ Add 20% space above the tallest bar
         barTouchData: BarTouchData(enabled: true),
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
+          leftTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: AxisTitles(
+          topTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
           bottomTitles: AxisTitles(
@@ -350,8 +350,8 @@ class _BarChartWidget extends StatelessWidget {
                     fontSize: AppSizes.fontXS,
                     color: Theme.of(context)
                         .colorScheme
-                        .onBackground
-                        .withOpacity(0.5),
+                        .onSurface
+                        .withValues(alpha: 0.5),
                   ),
                 );
               },
@@ -428,7 +428,7 @@ class _CategoryRow extends StatelessWidget {
                     category.label,
                     style: TextStyle(
                       fontSize: AppSizes.fontS,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -438,7 +438,7 @@ class _CategoryRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: AppSizes.fontS,
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
@@ -450,7 +450,7 @@ class _CategoryRow extends StatelessWidget {
             child: LinearProgressIndicator(
               value: percent,
               // ↑ Value between 0.0 and 1.0
-              backgroundColor: category.color.withOpacity(0.1),
+              backgroundColor: category.color.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(category.color),
               minHeight: 6,
             ),
@@ -474,7 +474,7 @@ class _SectionTitle extends StatelessWidget {
       style: TextStyle(
         fontSize: AppSizes.fontM,
         fontWeight: FontWeight.w600,
-        color: Theme.of(context).colorScheme.onBackground,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
@@ -492,7 +492,7 @@ class _EmptyStats extends StatelessWidget {
               Icons.pie_chart_outline,
               size: 48,
               color:
-                  Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+                  Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: AppSizes.paddingM),
             Text(
@@ -500,7 +500,7 @@ class _EmptyStats extends StatelessWidget {
               style: TextStyle(
                 fontSize: AppSizes.fontM,
                 color:
-                    Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],

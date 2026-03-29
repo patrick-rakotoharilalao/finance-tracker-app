@@ -102,9 +102,9 @@ class _AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         title: const Text(
           'Add Transaction',
@@ -160,8 +160,8 @@ class _AddScreenState extends State<AddScreen> {
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context)
                             .colorScheme
-                            .onBackground
-                            .withOpacity(0.6),
+                            .onSurface
+                            .withValues(alpha: 0.6),
                       ),
                     ),
                     const SizedBox(height: AppSizes.paddingS),
@@ -180,8 +180,8 @@ class _AddScreenState extends State<AddScreen> {
                         hintStyle: TextStyle(
                           color: Theme.of(context)
                               .colorScheme
-                              .onBackground
-                              .withOpacity(0.4),
+                              .onSurface
+                              .withValues(alpha: 0.4),
                         ),
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
@@ -340,7 +340,7 @@ class _TypeButton extends StatelessWidget {
               fontWeight: FontWeight.w600,
               color: isSelected
                   ? Colors.white
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ),
@@ -404,7 +404,7 @@ class _KeyButton extends StatelessWidget {
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: label == '⌫'
-              ? AppColors.expense.withOpacity(0.1)
+              ? AppColors.expense.withValues(alpha: 0.1)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AppSizes.radiusM),
           border: Border.all(
@@ -414,7 +414,7 @@ class _KeyButton extends StatelessWidget {
         ),
         child: Center(
           child: label == '⌫'
-              ? Icon(
+              ? const Icon(
                   Icons.backspace_outlined,
                   size: AppSizes.iconM,
                   color: AppColors.expense,

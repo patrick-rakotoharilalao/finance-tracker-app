@@ -46,7 +46,7 @@ class TransactionCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: category.color.withOpacity(0.15),
+                color: category.color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(AppSizes.radiusM),
               ),
               child: Icon(
@@ -82,7 +82,7 @@ class TransactionCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.leisure.withOpacity(0.15),
+                            color: AppColors.leisure.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Text(
@@ -107,7 +107,7 @@ class TransactionCard extends StatelessWidget {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.5),
+                          .withValues(alpha: 0.5),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

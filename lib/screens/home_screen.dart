@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
     final now = DateTime.now();
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         // ↑ SafeArea avoids the phone's notch and status bar
         child: CustomScrollView(
@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
               floating: true,
               // ↑ App bar reappears when scrolling up
               snap: true,
-              backgroundColor: Theme.of(context).colorScheme.background,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               elevation: 0,
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,8 +42,8 @@ class HomeScreen extends StatelessWidget {
                       fontSize: AppSizes.fontS,
                       color: Theme.of(context)
                           .colorScheme
-                          .onBackground
-                          .withOpacity(0.6),
+                          .onSurface
+                          .withValues(alpha: 0.6),
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -52,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: AppSizes.fontL,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -84,12 +84,12 @@ class HomeScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: AppSizes.fontM,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       TextButton(
                         onPressed: () => context.go('/history'),
-                        child: Text(
+                        child: const Text(
                           'See all',
                           style: TextStyle(
                             fontSize: AppSizes.fontS,
@@ -149,7 +149,7 @@ class _EmptyState extends StatelessWidget {
               Icons.receipt_long_outlined,
               size: 48,
               color:
-                  Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+                  Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: AppSizes.paddingM),
             Text(
@@ -157,7 +157,7 @@ class _EmptyState extends StatelessWidget {
               style: TextStyle(
                 fontSize: AppSizes.fontM,
                 color:
-                    Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: AppSizes.paddingS),
@@ -166,7 +166,7 @@ class _EmptyState extends StatelessWidget {
               style: TextStyle(
                 fontSize: AppSizes.fontS,
                 color:
-                    Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
             ),
           ],
