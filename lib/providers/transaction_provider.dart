@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
+
 import '../models/transaction.dart';
-import '../models/category.dart';
 
 class TransactionProvider extends ChangeNotifier {
   // ↑ ChangeNotifier is the base class for all providers.
@@ -38,7 +38,7 @@ class TransactionProvider extends ChangeNotifier {
 
   // Total balance (all incomes minus all expenses)
   double get totalBalance {
-    double income  = _transactions
+    double income = _transactions
         .where((t) => t.isIncome)
         .fold(0, (sum, t) => sum + t.amount);
     double expense = _transactions
@@ -51,9 +51,8 @@ class TransactionProvider extends ChangeNotifier {
   double get monthlyIncome {
     final now = DateTime.now();
     return _transactions
-        .where((t) => t.isIncome &&
-            t.date.month == now.month &&
-            t.date.year  == now.year)
+        .where((t) =>
+            t.isIncome && t.date.month == now.month && t.date.year == now.year)
         .fold(0, (sum, t) => sum + t.amount);
   }
 
@@ -61,9 +60,8 @@ class TransactionProvider extends ChangeNotifier {
   double get monthlyExpenses {
     final now = DateTime.now();
     return _transactions
-        .where((t) => t.isExpense &&
-            t.date.month == now.month &&
-            t.date.year  == now.year)
+        .where((t) =>
+            t.isExpense && t.date.month == now.month && t.date.year == now.year)
         .fold(0, (sum, t) => sum + t.amount);
   }
 
@@ -76,8 +74,7 @@ class TransactionProvider extends ChangeNotifier {
 
   // Total expenses grouped by category for a given month
   Map<String, double> expensesByCategory(int month, int year) {
-    final monthly = getByMonth(month, year)
-        .where((t) => t.isExpense);
+    final monthly = getByMonth(month, year).where((t) => t.isExpense);
 
     final Map<String, double> result = {};
     for (final t in monthly) {
@@ -97,13 +94,13 @@ class TransactionProvider extends ChangeNotifier {
     bool aiCategorized = false,
   }) async {
     final transaction = Transaction(
-      id:             const Uuid().v4(), // generates a unique id
-      amount:         amount,
-      type:           type,
-      category:       category,
-      date:           DateTime.now(),
-      note:           note,
-      aiCategorized:  aiCategorized,
+      id: const Uuid().v4(), // generates a unique id
+      amount: amount,
+      type: type,
+      category: category,
+      date: DateTime.now(),
+      note: note,
+      aiCategorized: aiCategorized,
     );
 
     await _box.add(transaction);
