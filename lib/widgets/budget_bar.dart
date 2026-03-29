@@ -36,7 +36,7 @@ class BudgetBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.radiusM),
         border: Border.all(
           color: isOver
-              ? AppColors.expense.withOpacity(0.5)
+              ? AppColors.expense.withValues(alpha: 0.5)
               : Theme.of(context).colorScheme.outlineVariant,
           width: isOver ? 1 : 0.5,
         ),
@@ -75,7 +75,7 @@ class BudgetBar extends StatelessWidget {
                       : Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.5),
+                          .withValues(alpha: 0.5),
                   fontWeight: isOver ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -89,7 +89,7 @@ class BudgetBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: _percent,
-              backgroundColor: _barColor.withOpacity(0.1),
+              backgroundColor: _barColor.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(_barColor),
               minHeight: 8,
             ),
