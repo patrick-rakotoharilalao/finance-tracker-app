@@ -7,29 +7,73 @@ import '../utils/constants.dart';
 import '../utils/formatters.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/transaction_card.dart';
+import '../services/gemini_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final GeminiService _gemini = GeminiService();
+  String _insight             = '';
+  bool _loadingInsight        = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load insight after first frame — data might not be ready yet
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInsight();
+    });
+  }
+
+  Future<void> _loadInsight() async {
+    final provider = context.read<TransactionProvider>();
+    final now      = DateTime.now();
+
+    // Only generate if there are expenses this month
+    if (provider.monthlyExpenses == 0) return;
+
+    setState(() => _loadingInsight = true);
+
+    final insight = await _gemini.generateMonthlyInsight(
+      totalIncome:        provider.monthlyIncome,
+      totalExpenses:      provider.monthlyExpenses,
+      expensesByCategory: provider.expensesByCategory(now.month, now.year),
+      month:              AppFormatters.monthYear(now),
+    );
+
+    setState(() {
+      _insight        = insight;
+      _loadingInsight = false;
+    });
+  }
+
+  // Returns a greeting based on the current hour
+  String _greeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning 👋';
+    if (hour < 18) return 'Good afternoon 👋';
+    return 'Good evening 👋';
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Watch the provider — rebuilds when data changes
-    // Like useStore() in Pinia but reactive
     final provider = context.watch<TransactionProvider>();
-    final now = DateTime.now();
+    final now      = DateTime.now();
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
-        // ↑ SafeArea avoids the phone's notch and status bar
         child: CustomScrollView(
-          // ↑ CustomScrollView lets us mix different
-          //   scrollable widgets (SliverAppBar, SliverList...)
           slivers: [
+
             // ── APP BAR ──────────────────────────────────────
             SliverAppBar(
               floating: true,
-              // ↑ App bar reappears when scrolling up
               snap: true,
               backgroundColor: Theme.of(context).colorScheme.surface,
               elevation: 0,
@@ -40,9 +84,7 @@ class HomeScreen extends StatelessWidget {
                     _greeting(),
                     style: TextStyle(
                       fontSize: AppSizes.fontS,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
+                      color: Theme.of(context).colorScheme.onSurface
                           .withValues(alpha: 0.6),
                       fontWeight: FontWeight.w400,
                     ),
@@ -66,12 +108,76 @@ class HomeScreen extends StatelessWidget {
               ),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
+
                   // Balance card
                   BalanceCard(
-                    totalBalance: provider.totalBalance,
-                    monthlyIncome: provider.monthlyIncome,
+                    totalBalance:    provider.totalBalance,
+                    monthlyIncome:   provider.monthlyIncome,
                     monthlyExpenses: provider.monthlyExpenses,
                   ),
+
+                  // ── AI INSIGHT CARD ───────────────────────
+                  if (_loadingInsight || _insight.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: AppSizes.paddingM,
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(AppSizes.paddingM),
+                        decoration: BoxDecoration(
+                          color: AppColors.leisure.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(AppSizes.radiusM),
+                          border: Border.all(
+                            color: AppColors.leisure.withOpacity(0.3),
+                            width: 0.5,
+                          ),
+                        ),
+                        child: _loadingInsight
+                            ? Row(
+                                children: [
+                                  SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.leisure,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'Generating insight...',
+                                    style: TextStyle(
+                                      fontSize: AppSizes.fontXS,
+                                      color: AppColors.leisure,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.auto_awesome,
+                                    size: 16,
+                                    color: AppColors.leisure,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _insight,
+                                      style: TextStyle(
+                                        fontSize: AppSizes.fontS,
+                                        color: Theme.of(context)
+                                            .colorScheme.onSurface,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
 
                   const SizedBox(height: AppSizes.paddingL),
 
@@ -108,7 +214,6 @@ class HomeScreen extends StatelessWidget {
                   else
                     ...provider.transactions
                         .take(5)
-                        // ↑ Shows only the 5 most recent transactions
                         .map((t) => TransactionCard(
                               transaction: t,
                               onDelete: () => provider.deleteTransaction(t),
@@ -124,18 +229,9 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  // Returns a greeting based on the current hour
-  String _greeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning 👋';
-    if (hour < 18) return 'Good afternoon 👋';
-    return 'Good evening 👋';
-  }
 }
 
 // ─── EMPTY STATE ─────────────────────────────────────────────
-// Shown when there are no transactions yet
 
 class _EmptyState extends StatelessWidget {
   @override
@@ -148,16 +244,16 @@ class _EmptyState extends StatelessWidget {
             Icon(
               Icons.receipt_long_outlined,
               size: 48,
-              color:
-                  Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+              color: Theme.of(context).colorScheme.onSurface
+                  .withValues(alpha: 0.3),
             ),
             const SizedBox(height: AppSizes.paddingM),
             Text(
               'No transactions yet',
               style: TextStyle(
                 fontSize: AppSizes.fontM,
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                color: Theme.of(context).colorScheme.onSurface
+                    .withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: AppSizes.paddingS),
@@ -165,8 +261,8 @@ class _EmptyState extends StatelessWidget {
               'Tap + to add your first transaction',
               style: TextStyle(
                 fontSize: AppSizes.fontS,
-                color:
-                    Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+                color: Theme.of(context).colorScheme.onSurface
+                    .withValues(alpha: 0.3),
               ),
             ),
           ],

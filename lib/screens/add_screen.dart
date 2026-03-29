@@ -8,6 +8,7 @@ import '../providers/transaction_provider.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
 import '../widgets/category_picker.dart';
+import '../services/gemini_service.dart';
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -15,9 +16,6 @@ class AddScreen extends StatefulWidget {
   @override
   State<AddScreen> createState() => _AddScreenState();
 }
-// ↑ StatefulWidget because this screen has local state
-//   (typed amount, selected category, selected type)
-//   that changes as the user interacts
 
 class _AddScreenState extends State<AddScreen> {
   // ── LOCAL STATE ────────────────────────────────────────────
@@ -26,8 +24,17 @@ class _AddScreenState extends State<AddScreen> {
   Category _category = Category.food;
   final TextEditingController _noteController = TextEditingController();
   bool _isSaving = false;
+  bool _iscategorizing = false;
+  final GeminiService _gemini = GeminiService();
 
-  // ── DISPOSE ────────────────────────────────────────────────
+  // ── LIFECYCLE ──────────────────────────────────────────────
+  @override
+  void initState() {
+    super.initState();
+    // Rebuild when note field changes — to enable/disable Auto-detect button
+    _noteController.addListener(() => setState(() {}));
+  }
+
   @override
   void dispose() {
     _noteController.dispose();
@@ -37,17 +44,28 @@ class _AddScreenState extends State<AddScreen> {
 
   // ── COMPUTED ───────────────────────────────────────────────
   double get _amount => double.tryParse(_amountString) ?? 0;
-  // ↑ tryParse returns null if the string isn't a valid number
-  //   "?? 0" means fallback to 0 if null
 
   bool get _isValid => _amount > 0;
-  // ↑ Save button is only active if amount > 0
+
+  // ── AI AUTO CATEGORIZATION ─────────────────────────────────
+  Future<void> _autoCategorize() async {
+    final note = _noteController.text.trim();
+    if (note.isEmpty) return;
+
+    setState(() => _iscategorizing = true);
+
+    final suggested = await _gemini.categorizeTransaction(note);
+
+    setState(() {
+      _category = CategoryExtension.fromString(suggested);
+      _iscategorizing = false;
+    });
+  }
 
   // ── KEYPAD LOGIC ───────────────────────────────────────────
   void _onKeyTap(String key) {
     setState(() {
       if (key == '⌫') {
-        // Backspace — remove last character
         if (_amountString.length > 1) {
           _amountString = _amountString.substring(
             0,
@@ -57,16 +75,13 @@ class _AddScreenState extends State<AddScreen> {
           _amountString = '0';
         }
       } else if (key == '.') {
-        // Decimal point — only one allowed
         if (!_amountString.contains('.')) {
           _amountString += '.';
         }
       } else {
-        // Number key
         if (_amountString == '0') {
-          _amountString = key; // replace leading zero
+          _amountString = key;
         } else {
-          // Max 10 characters to avoid overflow
           if (_amountString.length < 10) {
             _amountString += key;
           }
@@ -88,14 +103,12 @@ class _AddScreenState extends State<AddScreen> {
           note: _noteController.text.trim().isEmpty
               ? null
               : _noteController.text.trim(),
+          aiCategorized: _iscategorizing,
         );
 
-    // Haptic feedback — small vibration on save
     HapticFeedback.lightImpact();
 
     if (mounted) context.pop();
-    // ↑ "mounted" check — widget might have been removed
-    //   from the tree before the async operation finished
   }
 
   // ── BUILD ──────────────────────────────────────────────────
@@ -152,22 +165,96 @@ class _AddScreenState extends State<AddScreen> {
 
                     const SizedBox(height: AppSizes.paddingL),
 
-                    // ── CATEGORY PICKER ─────────────────────
-                    Text(
-                      'Category',
-                      style: TextStyle(
-                        fontSize: AppSizes.fontS,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withValues(alpha: 0.6),
-                      ),
+                    // ── CATEGORY HEADER + AUTO-DETECT ───────
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Category',
+                          style: TextStyle(
+                            fontSize: AppSizes.fontS,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: _noteController.text.trim().isEmpty
+                              ? null
+                              : _iscategorizing
+                                  ? null
+                                  : _autoCategorize,
+                          icon: _iscategorizing
+                              ? SizedBox(
+                                  width: 12,
+                                  height: 12,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.leisure,
+                                  ),
+                                )
+                              : Icon(
+                                  Icons.auto_awesome,
+                                  size: 14,
+                                  color: _noteController.text.trim().isEmpty
+                                      ? AppColors.grey
+                                      : AppColors.leisure,
+                                ),
+                          label: Text(
+                            _iscategorizing ? 'Detecting...' : 'Auto-detect',
+                            style: TextStyle(
+                              fontSize: AppSizes.fontXS,
+                              color: _noteController.text.trim().isEmpty
+                                  ? AppColors.grey
+                                  : AppColors.leisure,
+                            ),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSizes.paddingS,
+                              vertical: 4,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+
                     const SizedBox(height: AppSizes.paddingS),
-                    CategoryPicker(
-                      selectedCategory: _category,
-                      onSelected: (cat) => setState(() => _category = cat),
+
+                    // ── CATEGORY PICKER ─────────────────────
+                    Stack(
+                      children: [
+                        CategoryPicker(
+                          selectedCategory: _category,
+                          onSelected: (cat) => setState(() => _category = cat),
+                        ),
+                        if (_iscategorizing)
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surface
+                                    .withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radiusM,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'AI is analyzing...',
+                                  style: TextStyle(
+                                    fontSize: AppSizes.fontXS,
+                                    color: AppColors.leisure,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
 
                     const SizedBox(height: AppSizes.paddingL),
@@ -176,15 +263,20 @@ class _AddScreenState extends State<AddScreen> {
                     TextField(
                       controller: _noteController,
                       decoration: InputDecoration(
-                        hintText: 'Note (optional)',
+                        hintText:
+                            'Note (optional) — type to enable Auto-detect',
                         hintStyle: TextStyle(
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withValues(alpha: 0.4),
+                              .withOpacity(0.4),
+                          fontSize: AppSizes.fontXS,
                         ),
                         filled: true,
-                        fillColor: Theme.of(context).colorScheme.surface,
+                        fillColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceVariant
+                            .withOpacity(0.3),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppSizes.radiusM),
                           borderSide: BorderSide(
@@ -227,7 +319,6 @@ class _AddScreenState extends State<AddScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: _isValid ? _save : null,
-                  // ↑ null disables the button automatically
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _type == AppStrings.income
                         ? AppColors.income
@@ -265,7 +356,6 @@ class _AddScreenState extends State<AddScreen> {
 }
 
 // ─── TYPE SELECTOR ────────────────────────────────────────────
-// Toggle between Income and Expense
 
 class _TypeSelector extends StatelessWidget {
   final String selectedType;
@@ -280,7 +370,7 @@ class _TypeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(AppSizes.radiusM),
         border: Border.all(
           color: Theme.of(context).colorScheme.outlineVariant,
@@ -340,7 +430,7 @@ class _TypeButton extends StatelessWidget {
               fontWeight: FontWeight.w600,
               color: isSelected
                   ? Colors.white
-                  : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
             ),
           ),
         ),
@@ -350,7 +440,6 @@ class _TypeButton extends StatelessWidget {
 }
 
 // ─── KEYPAD ───────────────────────────────────────────────────
-// Custom numeric keyboard
 
 class _Keypad extends StatelessWidget {
   final ValueChanged<String> onKeyTap;
@@ -404,8 +493,8 @@ class _KeyButton extends StatelessWidget {
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: label == '⌫'
-              ? AppColors.expense.withValues(alpha: 0.1)
-              : Theme.of(context).colorScheme.surface,
+              ? AppColors.expense.withOpacity(0.1)
+              : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
           borderRadius: BorderRadius.circular(AppSizes.radiusM),
           border: Border.all(
             color: Theme.of(context).colorScheme.outlineVariant,
