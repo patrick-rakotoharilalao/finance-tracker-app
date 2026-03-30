@@ -34,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final provider = context.read<TransactionProvider>();
     final now      = DateTime.now();
 
-    // Only generate if there are expenses this month
     if (provider.monthlyExpenses == 0) return;
 
     setState(() => _loadingInsight = true);
@@ -52,7 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // Returns a greeting based on the current hour
   String _greeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'Good morning 👋';
