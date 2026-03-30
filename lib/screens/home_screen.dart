@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
           slivers: [
             const GreetingBar(),
 
-            // ── CONTENT 
+            // ── CONTENT
             SliverPadding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSizes.paddingM,
@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     monthlyExpenses: provider.monthlyExpenses,
                   ),
 
-                  // ── AI INSIGHT CARD 
+                  // ── AI INSIGHT CARD
                   if (_loadingInsight || _insight.isNotEmpty)
                     AiInsightCard(
                         loadingInsight: _loadingInsight, insight: _insight),
@@ -87,7 +87,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: AppSizes.paddingL),
 
                   // Recent transactions header
-                  const SectionHeader(title: 'Recent Transactions', linkLabel: 'See All', link: '/history'),
+                  const SectionHeader(
+                      title: 'Recent Transactions',
+                      linkLabel: 'See All',
+                      link: '/history'),
 
                   const SizedBox(height: AppSizes.paddingS),
 
