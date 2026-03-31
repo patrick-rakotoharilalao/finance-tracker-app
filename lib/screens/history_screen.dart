@@ -52,6 +52,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
   }
 
+  bool _isCurrentMonth() {
+    final now = DateTime.now();
+    return _month == now.month && _year == now.year;
+  }
+
   Map<String, List<Transaction>> _groupByDate(List<Transaction> transactions) {
     final Map<String, List<Transaction>> grouped = {};
 
@@ -167,8 +172,5 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  bool _isCurrentMonth() {
-    final now = DateTime.now();
-    return _month == now.month && _year == now.year;
-  }
+  
 }
