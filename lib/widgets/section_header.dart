@@ -15,7 +15,7 @@ class SectionHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Recent Transactions',
+          title,
           style: TextStyle(
             fontSize: AppSizes.fontM,
             fontWeight: FontWeight.w600,

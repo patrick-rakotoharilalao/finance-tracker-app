@@ -96,6 +96,7 @@ Expenses by category: $categorySummary
 
       return response.text?.trim() ?? '';
     } catch (e) {
+      print(e);
       return '';
     }
   }
