@@ -1,3 +1,6 @@
+import 'package:finance_tracker/widgets/keypad.dart';
+import 'package:finance_tracker/widgets/save_button.dart';
+import 'package:finance_tracker/widgets/type_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +21,6 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> {
-  // ── LOCAL STATE ────────────────────────────────────────────
   String _amountString = '0';
   String _type = AppStrings.expense;
   Category _category = Category.food;
@@ -27,7 +29,6 @@ class _AddScreenState extends State<AddScreen> {
   bool _iscategorizing = false;
   final GeminiService _gemini = GeminiService();
 
-  // ── LIFECYCLE ──────────────────────────────────────────────
   @override
   void initState() {
     super.initState();
@@ -42,12 +43,10 @@ class _AddScreenState extends State<AddScreen> {
     super.dispose();
   }
 
-  // ── COMPUTED ───────────────────────────────────────────────
   double get _amount => double.tryParse(_amountString) ?? 0;
 
   bool get _isValid => _amount > 0;
 
-  // ── AI AUTO CATEGORIZATION ─────────────────────────────────
   Future<void> _autoCategorize() async {
     final note = _noteController.text.trim();
     if (note.isEmpty) return;
@@ -62,7 +61,6 @@ class _AddScreenState extends State<AddScreen> {
     });
   }
 
-  // ── KEYPAD LOGIC ───────────────────────────────────────────
   void _onKeyTap(String key) {
     setState(() {
       if (key == '⌫') {
@@ -90,7 +88,6 @@ class _AddScreenState extends State<AddScreen> {
     });
   }
 
-  // ── SAVE ───────────────────────────────────────────────────
   Future<void> _save() async {
     if (!_isValid || _isSaving) return;
 
@@ -111,7 +108,6 @@ class _AddScreenState extends State<AddScreen> {
     if (mounted) context.pop();
   }
 
-  // ── BUILD ──────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,15 +137,15 @@ class _AddScreenState extends State<AddScreen> {
                   children: [
                     const SizedBox(height: AppSizes.paddingM),
 
-                    // ── TYPE SELECTOR ───────────────────────
-                    _TypeSelector(
+                    // ── TYPE SELECTOR 
+                    TypeSelector(
                       selectedType: _type,
                       onChanged: (type) => setState(() => _type = type),
                     ),
 
                     const SizedBox(height: AppSizes.paddingL),
 
-                    // ── AMOUNT DISPLAY ──────────────────────
+                    // ── AMOUNT DISPLAY
                     Center(
                       child: Text(
                         AppFormatters.currency(_amount),
@@ -187,7 +183,7 @@ class _AddScreenState extends State<AddScreen> {
                                   ? null
                                   : _autoCategorize,
                           icon: _iscategorizing
-                              ? SizedBox(
+                              ? const SizedBox(
                                   width: 12,
                                   height: 12,
                                   child: CircularProgressIndicator(
@@ -237,12 +233,12 @@ class _AddScreenState extends State<AddScreen> {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .surface
-                                    .withOpacity(0.7),
+                                    .withValues(alpha: 0.7),
                                 borderRadius: BorderRadius.circular(
                                   AppSizes.radiusM,
                                 ),
                               ),
-                              child: Center(
+                              child: const Center(
                                 child: Text(
                                   'AI is analyzing...',
                                   style: TextStyle(
@@ -269,14 +265,14 @@ class _AddScreenState extends State<AddScreen> {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.4),
+                              .withValues(alpha: 0.4),
                           fontSize: AppSizes.fontXS,
                         ),
                         filled: true,
                         fillColor: Theme.of(context)
                             .colorScheme
-                            .surfaceVariant
-                            .withOpacity(0.3),
+                            .surfaceContainerHighest
+                            .withValues(alpha: 0.3),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(AppSizes.radiusM),
                           borderSide: BorderSide(
@@ -309,213 +305,11 @@ class _AddScreenState extends State<AddScreen> {
             ),
 
             // ── KEYPAD ─────────────────────────────────────
-            _Keypad(onKeyTap: _onKeyTap),
+            Keypad(onKeyTap: _onKeyTap),
 
             // ── SAVE BUTTON ─────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.all(AppSizes.paddingM),
-              child: SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: _isValid ? _save : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _type == AppStrings.income
-                        ? AppColors.income
-                        : AppColors.expense,
-                    disabledBackgroundColor: AppColors.greyLight,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.radiusM),
-                    ),
-                  ),
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text(
-                          'Save',
-                          style: TextStyle(
-                            fontSize: AppSizes.fontM,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                ),
-              ),
-            ),
+            SaveButton(isValid: _isValid, isSaving: _isSaving, type: _type, onSave: _save)
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── TYPE SELECTOR ────────────────────────────────────────────
-
-class _TypeSelector extends StatelessWidget {
-  final String selectedType;
-  final ValueChanged<String> onChanged;
-
-  const _TypeSelector({
-    required this.selectedType,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(AppSizes.radiusM),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant,
-          width: 0.5,
-        ),
-      ),
-      child: Row(
-        children: [
-          _TypeButton(
-            label: 'Expense',
-            isSelected: selectedType == AppStrings.expense,
-            color: AppColors.expense,
-            onTap: () => onChanged(AppStrings.expense),
-          ),
-          _TypeButton(
-            label: 'Income',
-            isSelected: selectedType == AppStrings.income,
-            color: AppColors.income,
-            onTap: () => onChanged(AppStrings.income),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TypeButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _TypeButton({
-    required this.label,
-    required this.isSelected,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: AppSizes.paddingM),
-          decoration: BoxDecoration(
-            color: isSelected ? color : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppSizes.radiusM),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: AppSizes.fontS,
-              fontWeight: FontWeight.w600,
-              color: isSelected
-                  ? Colors.white
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─── KEYPAD ───────────────────────────────────────────────────
-
-class _Keypad extends StatelessWidget {
-  final ValueChanged<String> onKeyTap;
-
-  const _Keypad({required this.onKeyTap});
-
-  static const List<List<String>> _keys = [
-    ['7', '8', '9'],
-    ['4', '5', '6'],
-    ['1', '2', '3'],
-    ['.', '0', '⌫'],
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.paddingM,
-        vertical: AppSizes.paddingS,
-      ),
-      child: Column(
-        children: _keys.map((row) {
-          return Row(
-            children: row.map((key) {
-              return Expanded(
-                child: _KeyButton(
-                  label: key,
-                  onTap: () => onKeyTap(key),
-                ),
-              );
-            }).toList(),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
-
-class _KeyButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _KeyButton({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 56,
-        margin: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: label == '⌫'
-              ? AppColors.expense.withOpacity(0.1)
-              : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(AppSizes.radiusM),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
-            width: 0.5,
-          ),
-        ),
-        child: Center(
-          child: label == '⌫'
-              ? const Icon(
-                  Icons.backspace_outlined,
-                  size: AppSizes.iconM,
-                  color: AppColors.expense,
-                )
-              : Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: AppSizes.fontXL,
-                    fontWeight: FontWeight.w400,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
         ),
       ),
     );
