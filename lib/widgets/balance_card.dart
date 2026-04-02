@@ -16,8 +16,6 @@ class BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSizes.paddingL),
@@ -33,7 +31,7 @@ class BalanceCard extends StatelessWidget {
             'Total Balance',
             style: TextStyle(
               fontSize: AppSizes.fontS,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -66,7 +64,7 @@ class BalanceCard extends StatelessWidget {
               Container(
                 width: 1,
                 height: 40,
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
               ),
               Expanded(
                 child: _StatItem(
@@ -108,7 +106,7 @@ class _StatItem extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(AppSizes.radiusS),
             ),
             child: Icon(icon, color: Colors.white, size: AppSizes.iconS),
@@ -121,7 +119,7 @@ class _StatItem extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontSize: AppSizes.fontXS,
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                 ),
               ),
               Text(
@@ -139,4 +137,3 @@ class _StatItem extends StatelessWidget {
     );
   }
 }
-  

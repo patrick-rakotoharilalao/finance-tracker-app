@@ -20,7 +20,6 @@ class CategoryPicker extends StatelessWidget {
       height: 80,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        // ↑ Horizontal scroll like Instagram stories
         itemCount: Category.values.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
@@ -30,14 +29,12 @@ class CategoryPicker extends StatelessWidget {
           return GestureDetector(
             onTap: () => onSelected(category),
             child: AnimatedContainer(
-              // ↑ AnimatedContainer smoothly transitions
-              //   between selected/unselected states
               duration: const Duration(milliseconds: 200),
               width: 64,
               decoration: BoxDecoration(
                 color: isSelected
                     ? category.color
-                    : category.color.withOpacity(0.1),
+                    : category.color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppSizes.radiusM),
                 border: Border.all(
                   color: isSelected ? category.color : Colors.transparent,
