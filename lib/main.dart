@@ -7,6 +7,7 @@ import 'models/transaction.dart';
 import 'models/budget.dart';
 import 'providers/transaction_provider.dart';
 import 'providers/budget_provider.dart';
+import 'providers/streak_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'utils/constants.dart';
@@ -43,6 +44,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => BudgetProvider()..init(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => StreakProvider()..init(),
         ),
       ],
       child: Consumer<ThemeProvider>(
