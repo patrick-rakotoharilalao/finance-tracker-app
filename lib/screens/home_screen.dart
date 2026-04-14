@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(width: AppSizes.paddingS),
                         Text(
-                          '${streakProvider.streakDays} day${streakProvider.streakDays > 1 ? 's' : ''} in a row',
+                          '${streakProvider.streakDays} Day${streakProvider.streakDays > 1 ? 's' : ''} in a row',
                           style: TextStyle(
                             fontSize: AppSizes.fontS,
                             fontWeight: FontWeight.w600,
