@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 
 import '../models/category.dart';
 import '../providers/transaction_provider.dart';
@@ -104,8 +105,6 @@ class _AddScreenState extends State<AddScreen> {
         );
 
     HapticFeedback.lightImpact();
-
-    if (mounted) context.pop();
   }
 
   @override
@@ -137,7 +136,7 @@ class _AddScreenState extends State<AddScreen> {
                   children: [
                     const SizedBox(height: AppSizes.paddingM),
 
-                    // ── TYPE SELECTOR 
+                    // ── TYPE SELECTOR
                     TypeSelector(
                       selectedType: _type,
                       onChanged: (type) => setState(() => _type = type),
@@ -308,7 +307,11 @@ class _AddScreenState extends State<AddScreen> {
             Keypad(onKeyTap: _onKeyTap),
 
             // ── SAVE BUTTON ─────────────────────────────────
-            SaveButton(isValid: _isValid, isSaving: _isSaving, type: _type, onSave: _save)
+            SaveButton(
+                isValid: _isValid,
+                isSaving: _isSaving,
+                type: _type,
+                onSave: _save)
           ],
         ),
       ),

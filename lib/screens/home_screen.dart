@@ -98,10 +98,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (provider.transactions.isEmpty)
                     const EmptyState()
                   else
-                    ...provider.transactions.take(5).map((t) => TransactionCard(
-                          transaction: t,
-                          onDelete: () => provider.deleteTransaction(t),
-                        )),
+                    ...provider.transactions
+                        .take(5)
+                        .toList()
+                        .asMap()
+                        .entries
+                        .map(
+                          (entry) => TransactionCard(
+                            key: Key('home_${entry.value.id}'),
+                            transaction: entry.value,
+                            index: entry.key,
+                            onDelete: () =>
+                                provider.deleteTransaction(entry.value),
+                          ),
+                        ),
 
                   // Bottom padding so FAB doesn't cover last item
                   const SizedBox(height: 80),

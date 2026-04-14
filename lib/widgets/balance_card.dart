@@ -39,13 +39,20 @@ class BalanceCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           // Balance amount
-          Text(
-            AppFormatters.currency(totalBalance),
-            style: const TextStyle(
-              fontSize: AppSizes.fontXXL,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0, end: totalBalance),
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Text(
+                AppFormatters.currency(value),
+                style: const TextStyle(
+                  fontSize: AppSizes.fontXXL,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 24),
