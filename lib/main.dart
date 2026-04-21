@@ -10,6 +10,7 @@ import 'providers/budget_provider.dart';
 import 'providers/streak_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
+import 'services/notification_service.dart';
 import 'utils/constants.dart';
 
 void main() async {
@@ -25,6 +26,8 @@ void main() async {
 
   await Hive.openBox<Transaction>('transactions');
   await Hive.openBox<Budget>('budgets');
+  await NotificationService.instance.init();
+  await NotificationService.instance.requestPermissions();
 
   runApp(const MyApp());
 }
