@@ -91,10 +91,26 @@ class _AddScreenState extends State<AddScreen> {
   Future<void> _save() async {
     if (!_isValid || _isSaving) return;
 
+    final transactionProvider = context.read<TransactionProvider>();
+    final currentBalance = transactionProvider.totalBalance;
+    final isExpense = _type == AppStrings.expense;
+
+    if (isExpense && _amount > currentBalance) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Insufficient balance. Available: ${AppFormatters.currency(currentBalance)}',
+          ),
+          backgroundColor: AppColors.expense,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
 
     try {
-      await context.read<TransactionProvider>().addTransaction(
+      await transactionProvider.addTransaction(
             amount: _amount,
             type: _type,
             category: _category.value,
