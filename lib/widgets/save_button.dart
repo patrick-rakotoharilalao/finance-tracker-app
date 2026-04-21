@@ -22,7 +22,7 @@ class SaveButton extends StatelessWidget {
         width: double.infinity,
         height: 52,
         child: ElevatedButton(
-          onPressed: isValid ? onSave : null,
+          onPressed: isValid && !isSaving ? onSave : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: type == AppStrings.income
                 ? AppColors.income
