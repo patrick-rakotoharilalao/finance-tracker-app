@@ -79,8 +79,8 @@ class _TypeButton extends StatelessWidget {
               color: isSelected
                   ? Colors.white
                   : Theme.of(context).colorScheme.onSurface.withValues(
-                      alpha: 0.5,
-                    ),
+                        alpha: 0.5,
+                      ),
             ),
           ),
         ),
