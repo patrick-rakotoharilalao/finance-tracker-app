@@ -5,6 +5,7 @@ import 'package:finance_tracker/widgets/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/streak_provider.dart';
 import '../providers/transaction_provider.dart';
 import '../services/gemini_service.dart';
 import '../utils/constants.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Load insight after first frame — data might not be ready yet
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInsight();
+      context.read<StreakProvider>().markDailyUsage();
     });
   }
 
@@ -57,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<TransactionProvider>();
+    final streakProvider = context.watch<StreakProvider>();
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -72,6 +75,42 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
+                  Container(
+                    margin: const EdgeInsets.only(top: AppSizes.paddingS),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSizes.paddingM,
+                      vertical: AppSizes.paddingS,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .withValues(alpha: 0.35),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusL),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.local_fire_department_rounded,
+                          size: AppSizes.iconS,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: AppSizes.paddingS),
+                        Text(
+                          '${streakProvider.streakDays} day${streakProvider.streakDays > 1 ? 's' : ''} in a row',
+                          style: TextStyle(
+                            fontSize: AppSizes.fontS,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: AppSizes.paddingM),
+
                   // Balance card
                   BalanceCard(
                     totalBalance: provider.totalBalance,
@@ -98,10 +137,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (provider.transactions.isEmpty)
                     const EmptyState()
                   else
-                    ...provider.transactions.take(5).map((t) => TransactionCard(
-                          transaction: t,
-                          onDelete: () => provider.deleteTransaction(t),
-                        )),
+                    ...provider.transactions
+                        .take(5)
+                        .toList()
+                        .asMap()
+                        .entries
+                        .map(
+                          (entry) => TransactionCard(
+                            key: Key('home_${entry.value.id}'),
+                            transaction: entry.value,
+                            index: entry.key,
+                            onDelete: () =>
+                                provider.deleteTransaction(entry.value),
+                          ),
+                        ),
 
                   // Bottom padding so FAB doesn't cover last item
                   const SizedBox(height: 80),

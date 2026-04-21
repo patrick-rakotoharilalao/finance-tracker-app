@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../models/budget.dart';
+import '../models/transaction.dart';
+import '../services/notification_service.dart';
 
 class BudgetProvider extends ChangeNotifier {
   late Box<Budget> _box;
@@ -11,6 +14,7 @@ class BudgetProvider extends ChangeNotifier {
   Future<void> init() async {
     _box = Hive.box<Budget>('budgets');
     _loadFromBox();
+    await _refreshSmartReminders();
   }
 
   void _loadFromBox() {
@@ -54,6 +58,7 @@ class BudgetProvider extends ChangeNotifier {
       await _box.add(budget); // add new
     }
     _loadFromBox();
+    await _refreshSmartReminders();
   }
 
   // Delete a budget
@@ -62,6 +67,15 @@ class BudgetProvider extends ChangeNotifier {
     if (index != -1) {
       await _box.deleteAt(index);
       _loadFromBox();
+      await _refreshSmartReminders();
     }
+  }
+
+  Future<void> _refreshSmartReminders() async {
+    final transactionBox = Hive.box<Transaction>('transactions');
+    await NotificationService.instance.refreshSmartReminders(
+      transactions: transactionBox.values.toList(),
+      budgets: _budgets,
+    );
   }
 }

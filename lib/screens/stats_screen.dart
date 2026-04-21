@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../models/category.dart';
 import '../providers/transaction_provider.dart';
 import '../utils/constants.dart';
-import '../utils/formatters.dart';
 
 class StatsScreen extends StatefulWidget {
   const StatsScreen({super.key});
