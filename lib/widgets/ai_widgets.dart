@@ -17,10 +17,10 @@ class AiInsightCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(AppSizes.paddingM),
         decoration: BoxDecoration(
-          color: AppColors.leisure.withOpacity(0.08),
+          color: AppColors.leisure.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(AppSizes.radiusM),
           border: Border.all(
-            color: AppColors.leisure.withOpacity(0.3),
+            color: AppColors.leisure.withValues(alpha: 0.3),
             width: 0.5,
           ),
         ),
