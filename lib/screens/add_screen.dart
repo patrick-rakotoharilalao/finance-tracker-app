@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 
 import '../models/category.dart';
 import '../providers/transaction_provider.dart';
@@ -94,17 +93,25 @@ class _AddScreenState extends State<AddScreen> {
 
     setState(() => _isSaving = true);
 
-    await context.read<TransactionProvider>().addTransaction(
-          amount: _amount,
-          type: _type,
-          category: _category.value,
-          note: _noteController.text.trim().isEmpty
-              ? null
-              : _noteController.text.trim(),
-          aiCategorized: _iscategorizing,
-        );
+    try {
+      await context.read<TransactionProvider>().addTransaction(
+            amount: _amount,
+            type: _type,
+            category: _category.value,
+            note: _noteController.text.trim().isEmpty
+                ? null
+                : _noteController.text.trim(),
+            aiCategorized: _iscategorizing,
+          );
 
-    HapticFeedback.lightImpact();
+      if (!mounted) return;
+      HapticFeedback.lightImpact();
+      context.pop();
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
   }
 
   @override
@@ -172,7 +179,7 @@ class _AddScreenState extends State<AddScreen> {
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.6),
+                                .withValues(alpha: 0.6),
                           ),
                         ),
                         TextButton.icon(

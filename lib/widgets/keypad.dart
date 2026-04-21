@@ -53,8 +53,10 @@ class _KeyButton extends StatelessWidget {
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: label == '⌫'
-              ? AppColors.expense.withOpacity(0.1)
-              : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+              ? AppColors.expense.withValues(alpha: 0.1)
+              : Theme.of(context).colorScheme.surfaceVariant.withValues(
+                  alpha: 0.3,
+                ),
           borderRadius: BorderRadius.circular(AppSizes.radiusM),
           border: Border.all(
             color: Theme.of(context).colorScheme.outlineVariant,

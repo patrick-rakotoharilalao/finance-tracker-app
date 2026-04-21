@@ -78,7 +78,9 @@ class _TypeButton extends StatelessWidget {
               fontWeight: FontWeight.w600,
               color: isSelected
                   ? Colors.white
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  : Theme.of(context).colorScheme.onSurface.withValues(
+                        alpha: 0.5,
+                      ),
             ),
           ),
         ),
